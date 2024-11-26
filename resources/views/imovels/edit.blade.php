@@ -8,10 +8,10 @@
         <div class="card">
             <div class="card-header">
                 <div class="float-start">
-                    Edit imovel
+                    Editar imovel
                 </div>
                 <div class="float-end">
-                    <a href="{{ route('imovels.index') }}" class="btn btn-primary btn-sm">&larr; Back</a>
+                    <a href="{{ route('imovels.index') }}" class="btn btn-primary btn-sm">&larr; Voltar</a>
                 </div>
             </div>
             <div class="card-body">
@@ -20,7 +20,7 @@
                     @method("PUT")
 
                     <div class="mb-3 row">
-                        <label for="endereco" class="col-md-4 col-form-label text-md-end text-start">endereco</label>
+                        <label for="endereco" class="col-md-4 col-form-label text-md-end text-start">Endereço</label>
                         <div class="col-md-6">
                           <input type="text" class="form-control @error('endereco') is-invalid @enderror" id="endereco" name="endereco" value="{{ $imovel->endereco }}">
                             @if ($errors->has('endereco'))
@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="mb-3 row">
-                        <label for="descricao" class="col-md-4 col-form-label text-md-end text-start">descricao</label>
+                        <label for="descricao" class="col-md-4 col-form-label text-md-end text-start">Descrição</label>
                         <div class="col-md-6">
                             <textarea class="form-control @error('descricao') is-invalid @enderror" id="descricao" name="descricao">{{ $imovel->descricao }}</textarea>
                             @if ($errors->has('descricao'))
@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="mb-3 row">
-                        <label for="proprietario" class="col-md-4 col-form-label text-md-end text-start">proprietario</label>
+                        <label for="proprietario" class="col-md-4 col-form-label text-md-end text-start">Proprietário</label>
                         <div class="col-md-6">
                             <textarea class="form-control @error('proprietario') is-invalid @enderror" id="proprietario" name="proprietario">{{ $imovel->proprietario }}</textarea>
                             @if ($errors->has('proprietario'))
@@ -50,9 +50,10 @@
                     </div>
 
                     <div class="mb-3 row">
-                        <label for="foto" class="col-md-4 col-form-label text-md-end text-start">foto</label>
+                        <label for="foto" class="col-md-4 col-form-label text-md-end text-start">Foto</label>
                         <div class="col-md-6">
-                            <input type="file" class="form-control @error('foto') is-invalid @enderror" id="foto" name="foto">{{ $imovel->foto }}</>
+                            <input type="file" class="form-control @error('foto') is-invalid @enderror" id="foto" name="foto"></>
+                            <img src="{{ asset('storage/' . $imovel->foto) }}" width="100px" alt="Imagem do Imóvel" class="mt-2">
                             @if ($errors->has('foto'))
                                 <span class="text-danger">{{ $errors->first('foto') }}</span>
                             @endif
@@ -60,7 +61,7 @@
                     </div>
                     
                     <div class="mb-3 row">
-                        <input type="submit" class="col-md-3 offset-md-5 btn btn-primary" value="Update">
+                        <input type="submit" class="col-md-3 offset-md-5 btn btn-primary" value="Atualizar">
                     </div>
                     
                 </form>

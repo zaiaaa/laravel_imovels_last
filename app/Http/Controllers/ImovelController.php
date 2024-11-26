@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateImovelRequest;
 use App\Models\Imovel;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 
 class ImovelController extends Controller
 {
@@ -43,13 +44,27 @@ class ImovelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreImovelRequest $request): RedirectResponse
+        public function store(StoreImovelRequest $request): RedirectResponse
     {
-        Imovel::create($request->all());
-        return redirect()->route('imovels.index')
-                ->withSuccess('New Imovel is added successfully.');
-    }
+        $validated = $request->validated();
 
+        if ($request->hasFile('foto')) {
+             // put image in the public storage
+            $filePath = Storage::disk('public')->put('images/imovels/fotos', request()->file('foto'));
+            $validated['foto'] = $filePath;
+        }
+
+        // insert only requests that already validated in the StoreRequest
+        $create = Imovel::create($validated);
+
+        if($create) {
+            // add flash for the success notification
+            session()->flash('notif.success', 'Post created successfully!');
+            return redirect()->route('imovels.index');
+        }
+
+        return abort(500);
+    }
     /**
      * Display the specified resource.
      */
@@ -73,20 +88,45 @@ class ImovelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateImovelRequest $request, Imovel $imovel): RedirectResponse
+    public function update(UpdateImovelRequest $request, string $id): RedirectResponse
     {
-        $imovel->update($request->all());
-        return redirect()->back()
-                ->withSuccess('imovel is updated successfully.');
+        $imovel = Imovel::findOrFail($id);
+        $validated = $request->validated();
+        
+        if ($request->hasFile('foto')) {
+            // delete image
+            Storage::disk('public')->delete($imovel->foto);
+            
+            $filePath = Storage::disk('public')->put('images/imovels/fotos', request()->file('foto'), 'public');
+            $validated['foto'] = $filePath;
+        }
+        
+        $update = $imovel->update($validated);
+
+        if($update) {
+            session()->flash('notif.success', 'Post updated successfully!');
+            return redirect()->route('imovels.index');
+        }
+
+        return abort(500);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Imovel $imovel): RedirectResponse
+    public function destroy(string $id): RedirectResponse
     {
-        $imovel->delete();
-        return redirect()->route('imovels.index')
-                ->withSuccess('imovel is deleted successfully.');
+        $imovel = Imovel::findOrFail($id);
+
+        Storage::disk('public')->delete($imovel->foto);
+        
+        $delete = $imovel->delete();
+
+        if($delete) {
+            session()->flash('notif.success', 'imovel deleted successfully!');
+            return redirect()->route('imovels.index');
+        }
+
+        abort(500);
     }
 }
